@@ -1,0 +1,18 @@
+{
+  "id": "/",
+  "name": "Detailing Operations Manager",
+  "short_name": "Detailing Ops",
+  "description": "Vehicle-first shop operations",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f6f7f4",
+  "theme_color": "#193d36",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
