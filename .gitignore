@@ -6,3 +6,4 @@ dist/
 output/
 .playwright-cli/
 .netlify/
+.env.local
