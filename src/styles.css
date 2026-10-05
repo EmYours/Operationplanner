@@ -3,17 +3,17 @@
 
 :root {
   font-family: "DM Sans Variable", sans-serif;
-  color: #25352f;
-  background: #f6f7f4;
+  color: #1f2937;
+  background: #f4f5f7;
   font-synthesis: none;
   font-weight: 400;
-  --green: #224b3e;
-  --dark: #193d36;
-  --muted: #879087;
-  --border: #e6e9e1;
-  --accent: #d2e9be;
+  --green: #2563eb;
+  --dark: #111827;
+  --muted: #6b7280;
+  --border: #d9dee7;
+  --accent: #dbeafe;
   --surface: #fff;
-  --red: #ae584a;
+  --red: #dc2626;
 }
 * {
   box-sizing: border-box;
@@ -3100,5 +3100,426 @@ dialog > p {
   }
   .mobile-nav button.active {
     color: #365c2d;
+  }
+}
+
+/* Visual refresh: macOS-inspired neutral shell with color reserved for state. */
+body {
+  background:
+    radial-gradient(circle at 14% -8%, #ffffff 0 22%, transparent 42%),
+    linear-gradient(180deg, #f8fafc 0%, #eef1f5 100%);
+}
+h1 {
+  color: #111827;
+  letter-spacing: -0.04em;
+}
+h2,
+h3 {
+  color: #172033;
+}
+button:focus-visible,
+a:focus-visible,
+input:focus,
+textarea:focus,
+select:focus,
+.search-field:focus-within {
+  outline-color: #3b82f6;
+}
+.button {
+  border-radius: 10px;
+  font-weight: 700;
+  box-shadow: 0 1px 0 #ffffff80 inset;
+}
+.button.primary {
+  background: #2563eb;
+  color: #fff;
+  border-color: #1d4ed8;
+  box-shadow:
+    0 1px 0 #ffffff2b inset,
+    0 10px 22px #2563eb24;
+}
+.button.primary:hover {
+  background: #1d4ed8;
+  box-shadow:
+    0 1px 0 #ffffff2b inset,
+    0 12px 28px #2563eb30;
+}
+.button.secondary {
+  background: #ffffffcc;
+  border-color: #d8dee8;
+  color: #334155;
+}
+.button.secondary:hover,
+.icon-button:hover,
+.top-avatar:hover {
+  background: #f1f5f9;
+}
+.text-button {
+  color: #2563eb;
+  font-weight: 700;
+}
+.muted {
+  color: #64748b !important;
+}
+.sidebar {
+  background: #111827;
+  color: #cbd5e1;
+  box-shadow: 1px 0 0 #ffffff0d inset;
+}
+.brand,
+.profile strong {
+  color: #f8fafc;
+}
+.workspace-label,
+.brand > span > span,
+.profile div span,
+.shop-status p {
+  color: #94a3b8;
+}
+.nav-item {
+  color: #cbd5e1;
+  border-radius: 10px;
+}
+.nav-item.active {
+  background: #f8fafc;
+  color: #0f172a;
+  box-shadow: 0 10px 24px #0000001f;
+}
+.nav-item:hover:not(.active) {
+  background: #1f2937;
+  color: #f8fafc;
+}
+.nav-count {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+.live-dot {
+  background: #22c55e;
+  box-shadow: 0 0 0 4px #22c55e1c;
+}
+.shop-status,
+.profile {
+  border-color: #ffffff12;
+}
+.avatar {
+  background: #2563eb;
+  color: #eff6ff;
+}
+.profile .icon-button {
+  color: #cbd5e1;
+}
+.topbar {
+  background: #ffffffbf;
+  border-color: #dbe2ec;
+  backdrop-filter: blur(18px);
+  box-shadow: 0 1px 0 #ffffffa6 inset;
+}
+.breadcrumb,
+.sync-state,
+.page-heading p,
+.eyebrow,
+.metric-label,
+.metric-detail,
+.section-subtitle,
+.workspace-footer,
+.help-text,
+.field small,
+.step-label,
+.job-summary span,
+.task-name small,
+.task-edit,
+.login-footnote,
+.form-section-heading p,
+.empty p,
+.demo-banner,
+.draft-tag,
+.schedule-row small,
+.team-vehicle small,
+.team-stats span,
+.vehicle-subtitle,
+.vehicle-assignment,
+.assignment-label,
+.small-label,
+.work-indicator,
+.progress-label,
+.card-schedule,
+.quiet-note,
+.results-toolbar,
+.workload-row > div > span,
+.workload-row small,
+.timeline-item small,
+.timeline-item small span,
+.timeline-item > span > span,
+.plan-prompt p {
+  color: #64748b;
+}
+.breadcrumb strong,
+.metric > strong,
+.vehicle-title,
+.current-work strong,
+.workload-row strong,
+.timeline-item strong,
+.empty h3,
+.login-brand,
+.login-surface h1 {
+  color: #111827;
+}
+.top-avatar,
+.search-field,
+.select-wrap select,
+.schedule-controls input,
+.surface,
+.metrics,
+.vehicle-card,
+.login-surface {
+  background: #ffffffd9;
+  border-color: #dbe2ec;
+  box-shadow:
+    0 1px 0 #ffffffcc inset,
+    0 18px 45px #0f172a0a;
+}
+.metrics {
+  border-radius: 16px;
+}
+.metric {
+  background: transparent;
+  border-color: #e2e8f0;
+}
+.metric:hover {
+  background: #f8fafc;
+}
+.attention-metric {
+  background: #fff7ed;
+}
+.attention-metric > strong,
+.attention-metric .icon {
+  color: #ea580c;
+}
+.filter-dot {
+  background: #ea580c;
+}
+.count {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+  color: #1d4ed8;
+  border-radius: 999px;
+  font-weight: 700;
+}
+.filter-tabs {
+  border-color: #dbe2ec;
+}
+.filter-tab {
+  color: #64748b;
+  font-weight: 650;
+}
+.filter-tab.active,
+.filter-tab:hover {
+  color: #2563eb;
+}
+.filter-tab.active:after {
+  background: #2563eb;
+  height: 3px;
+}
+.search-field,
+.select-wrap select {
+  border-radius: 11px;
+}
+.search-field .icon,
+.breadcrumb .icon,
+.section-heading > .icon,
+.vehicle-symbol,
+.empty > .icon {
+  color: #64748b;
+}
+.vehicle-card {
+  border-radius: 14px;
+}
+.vehicle-card:hover {
+  border-color: #93c5fd;
+  box-shadow:
+    0 1px 0 #ffffffcc inset,
+    0 22px 48px #2563eb14;
+}
+.vehicle-card.has-warning {
+  border-color: #fed7aa;
+  box-shadow:
+    0 1px 0 #ffffffcc inset,
+    0 20px 42px #f9731617;
+}
+.vehicle-symbol {
+  background: #f1f5f9;
+  border-radius: 11px;
+}
+.status {
+  border-radius: 999px;
+  padding: 6px 9px;
+  font-weight: 750;
+  letter-spacing: 0;
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+}
+.status-dot {
+  width: 6px;
+  height: 6px;
+}
+.status.ongoing,
+.work-indicator.ongoing {
+  background: #dbeafe;
+  border-color: #bfdbfe;
+  color: #1d4ed8;
+}
+.status.ready,
+.ready-note {
+  background: #dcfce7;
+  border-color: #bbf7d0;
+  color: #15803d;
+}
+.status.checking {
+  background: #fef3c7;
+  border-color: #fde68a;
+  color: #b45309;
+}
+.status.ingress {
+  background: #cffafe;
+  border-color: #a5f3fc;
+  color: #0e7490;
+}
+.status.blocked,
+.work-indicator.blocked,
+.warning-badge {
+  background: #fee2e2;
+  border-color: #fecaca;
+  color: #b91c1c;
+}
+.work-indicator {
+  border: 0;
+  background: transparent;
+  font-weight: 700;
+}
+.warning-badge {
+  border: 1px solid #fecaca;
+  border-radius: 999px;
+  font-weight: 750;
+}
+.warning-badge.amber,
+.today-note {
+  background: #fef3c7;
+  color: #b45309;
+  border-color: #fde68a;
+}
+.vehicle-title:hover,
+.side-link:hover,
+.workload-row:hover > div > span,
+.view-job:hover,
+.demo-banner button,
+.select-wrap select,
+.side-link,
+.plan-prompt .text-button {
+  color: #2563eb;
+}
+.vehicle-assignment,
+.current-work,
+.progress-label,
+.view-job,
+.card-schedule,
+.job-task,
+.schedule-row,
+.team-vehicle {
+  border-color: #e2e8f0;
+}
+.team-mark {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+.team-1 {
+  background: #fef3c7;
+  color: #b45309;
+}
+.team-2 {
+  background: #ede9fe;
+  color: #6d28d9;
+}
+.team-3 {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+.team-4 {
+  background: #dcfce7;
+  color: #15803d;
+}
+.progress-track,
+.workload-track {
+  background: #e2e8f0;
+}
+.progress-track span,
+.workload-track i {
+  background: #60a5fa;
+}
+.progress-track .complete {
+  background: #22c55e;
+}
+.view-job {
+  background: #f8fafc;
+  color: #334155;
+}
+.context-panel {
+  border-color: #dbe2ec;
+}
+.timeline-item:not(:last-child):before {
+  background: #dbe2ec;
+}
+.timeline-dot {
+  background: #2563eb;
+  border-color: #f8fafc;
+  outline-color: #bfdbfe;
+}
+.timeline-dot.arrival {
+  background: #06b6d4;
+  outline-color: #a5f3fc;
+}
+.plan-prompt {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+  box-shadow: 0 18px 40px #2563eb12;
+}
+.plan-prompt-icon {
+  background: #dbeafe;
+  border-color: #bfdbfe;
+  color: #1d4ed8;
+}
+.workspace-footer {
+  border-color: #dbe2ec;
+}
+.login-page {
+  background:
+    radial-gradient(circle at 50% -10%, #ffffff 0 24%, transparent 46%),
+    linear-gradient(180deg, #f8fafc 0%, #e8edf4 100%);
+}
+.login-surface {
+  border-radius: 18px;
+}
+#toast {
+  background: #111827;
+  border-color: #334155;
+  color: #f8fafc;
+  box-shadow: 0 18px 55px #0f172a33;
+}
+#toast.error {
+  background: #991b1b;
+  border-color: #ef4444;
+}
+@media (max-width: 700px) {
+  .mobile-nav {
+    background: #ffffffd9;
+    border-color: #dbe2ec;
+    backdrop-filter: blur(18px);
+  }
+  .mobile-nav button {
+    color: #64748b;
+  }
+  .mobile-nav button.active {
+    color: #2563eb;
+    background: #eff6ff;
   }
 }
