@@ -35,6 +35,7 @@ const state = {
   planDate: addDays(dateKey(), 1),
   planText: "",
   planSaved: false,
+  planView: "preview",
   scheduleDate: dateKey(),
   historyTab: "vehicles",
   busy: false,
@@ -307,7 +308,47 @@ function teamsPage() {
     .join("")}</div>`;
 }
 function planPage() {
-  return `${title("DAILY PLAN", "Operations plan", "Generate a handover from active jobs, task status, and release schedules.", '<button class="button secondary" data-page="history" data-plans>' + icon("history") + " Saved plans</button>")}<div class="plan-layout"><section class="surface plan-settings"><span class="step-label">01 / PREPARE</span><h2>Plan settings</h2><p class="muted">Include scheduled ingress, releases, carryovers and each team’s work.</p><label class="field">Plan date<input type="date" id="plan-date" value="${state.planDate}" required/></label><div class="plan-includes">${["Vehicles carried forward", "Tasks and current statuses", "Team assignments", "Release & ingress schedules", "Blocked work and warnings"].map((t) => `<span>${icon("check")}${t}</span>`).join("")}</div><button class="button primary full-width" data-action="generate">${icon("spark")} ${state.planText ? "Regenerate plan" : "Generate plan"}</button><p class="help-text">Generate again after shop updates to refresh this draft. Saved snapshots keep their original text.</p></section><section class="surface plan-document"><div class="section-heading"><div><span class="step-label">02 / REVIEW & SAVE</span><h2>Handover draft</h2></div><span class="draft-tag">${state.planSaved ? "Saved snapshot" : "Draft"}</span></div>${state.planText ? `<label class="sr-only" for="plan-text">Daily operations plan draft</label><textarea id="plan-text" spellcheck="false">${e(state.planText)}</textarea><div class="plan-actions"><button class="button secondary" data-action="copy-plan">${icon("copy")} Copy</button><button class="button secondary" data-action="download-plan">${icon("download")} Download</button><button class="button primary" data-action="save-plan" ${state.planSaved ? "disabled" : ""}>${icon("check")} ${state.planSaved ? "Saved" : "Save snapshot"}</button></div>` : empty("No draft yet", "Choose a date and generate a plan. Review it here before saving or sharing.")}</section></div>`;
+  return `${title("DAILY PLAN", "Operations plan", "Generate a clear handover for the team, then copy or save the shareable version.", '<button class="button secondary" data-page="history" data-plans>' + icon("history") + " Saved plans</button>")}<div class="plan-layout"><section class="surface plan-settings"><span class="step-label">01 / PREPARE</span><h2>Plan settings</h2><p class="muted">Build the handover from the latest schedules, assignments, and task updates.</p><label class="field">Plan date<input type="date" id="plan-date" value="${state.planDate}" required/></label><div class="plan-includes">${["Vehicles carried forward", "Tasks and current statuses", "Team assignments", "Release & ingress schedules", "Blocked work and warnings"].map((t) => `<span>${icon("check")}${t}</span>`).join("")}</div><button class="button primary full-width" data-action="generate">${icon("spark")} ${state.planText ? "Refresh plan" : "Generate plan"}</button><p class="help-text">Refresh after shop updates. Saved snapshots keep the original handover.</p></section><section class="surface plan-document"><div class="plan-document-heading"><div><span class="step-label">02 / REVIEW & SAVE</span><h2>Handover draft</h2></div>${state.planText ? `<div class="plan-view-tabs" role="tablist" aria-label="Plan view"><button class="${state.planView === "preview" ? "active" : ""}" data-plan-view="preview" role="tab" aria-selected="${state.planView === "preview"}">${icon("plan")} Visual view</button><button class="${state.planView === "text" ? "active" : ""}" data-plan-view="text" role="tab" aria-selected="${state.planView === "text"}">${icon("copy")} Copy text</button></div>` : ""}<span class="draft-tag">${state.planSaved ? "Saved snapshot" : "Draft"}</span></div>${state.planText ? `${state.planView === "preview" ? planPreview() : `<div class="plan-text-view"><div class="plan-text-note">${icon("copy")} This is the editable version used when you copy, download, or save the plan.</div><label class="sr-only" for="plan-text">Daily operations plan draft</label><textarea id="plan-text" spellcheck="false">${e(state.planText)}</textarea></div>`}<div class="plan-actions"><button class="button secondary" data-action="copy-plan">${icon("copy")} Copy text</button><button class="button secondary" data-action="download-plan">${icon("download")} Download</button><button class="button primary" data-action="save-plan" ${state.planSaved ? "disabled" : ""}>${icon("check")} ${state.planSaved ? "Saved" : "Save snapshot"}</button></div>` : empty("No draft yet", "Choose a date and generate a plan. Your readable handover will appear here.")}</section></div>`;
+}
+
+function planPreview() {
+  const active = activeVehicles(state.data.vehicles);
+  const relevant = active.filter(
+    (v) => !v.ingress_datetime || dateKey(v.ingress_datetime) <= state.planDate,
+  );
+  const releases = relevant
+    .filter(
+      (v) =>
+        v.expected_release_datetime &&
+        dateKey(v.expected_release_datetime) <= state.planDate,
+    )
+    .sort((a, b) =>
+      a.expected_release_datetime.localeCompare(b.expected_release_datetime),
+    );
+  const ingress = active
+    .filter((v) => dateKey(v.ingress_datetime) === state.planDate)
+    .sort((a, b) => a.ingress_datetime.localeCompare(b.ingress_datetime));
+  const alerts = relevant.filter((v) => warnings(v).length);
+  const groups = [
+    ...state.data.teams,
+    { id: null, name: "Unassigned" },
+  ]
+    .map((team, index) => ({
+      ...team,
+      index,
+      vehicles: relevant.filter((v) => v.team_id === team.id),
+    }))
+    .filter((group) => group.vehicles.length);
+  const vehicleMeta = (v) =>
+    [v.color, v.package_label, teamName(v)].filter(Boolean).map(e).join(" · ");
+  const scheduleRow = (v, type) => {
+    const value =
+      type === "release" ? v.expected_release_datetime : v.ingress_datetime;
+    const carryover =
+      type === "release" && dateKey(value) < state.planDate;
+    return `<button class="plan-movement-row" data-view="${e(v.id)}"><span class="plan-time"><strong>${formatTime(value)}</strong><small>${type === "release" ? formatDate(value) : "Arrival"}</small></span><span class="plan-movement-name"><strong>${e(v.vehicle_name)}</strong><small>${vehicleMeta(v)}</small></span>${carryover ? '<span class="plan-flag carryover">Carryover</span>' : statusBadge(v.overall_status)}${icon("chevron")}</button>`;
+  };
+  return `<div class="plan-preview" role="tabpanel"><header class="plan-preview-cover"><div><span class="plan-preview-kicker">OPERATIONS HANDOVER</span><h3>${formatDate(`${state.planDate}T12:00:00Z`, { weekday: "long", year: "numeric" })}</h3><p>Shop plan · ${e(TIMEZONE)}</p></div><span class="draft-tag">${state.planSaved ? "Saved snapshot" : "Working draft"}</span></header><div class="plan-summary" aria-label="Plan summary"><div><strong>${relevant.length}</strong><span>Active jobs</span></div><div><strong>${releases.length}</strong><span>Due releases</span></div><div><strong>${ingress.length}</strong><span>Arrivals</span></div><div class="${alerts.length ? "has-alert" : ""}"><strong>${alerts.length}</strong><span>Need attention</span></div></div><div class="plan-preview-body"><section class="plan-preview-section"><div class="plan-section-title"><span class="plan-section-icon release">${icon("calendar")}</span><div><h4>Releases & carryovers</h4><p>Jobs due by the end of this plan date</p></div><span class="count">${releases.length}</span></div><div class="plan-movement-list">${releases.map((v) => scheduleRow(v, "release")).join("") || '<div class="plan-clear-state">' + icon("circleCheck") + "<span><strong>No releases scheduled</strong><small>No carryovers or releases are due for this date.</small></span></div>"}</div></section><section class="plan-preview-section"><div class="plan-section-title"><span class="plan-section-icon ingress">${icon("car")}</span><div><h4>Scheduled ingress</h4><p>Vehicles expected to arrive</p></div><span class="count">${ingress.length}</span></div><div class="plan-movement-list">${ingress.map((v) => scheduleRow(v, "ingress")).join("") || '<div class="plan-clear-state">' + icon("calendar") + "<span><strong>No arrivals scheduled</strong><small>No ingress is listed for this date.</small></span></div>"}</div></section><section class="plan-preview-section team-plan-section"><div class="plan-section-title"><span class="plan-section-icon teams">${icon("teams")}</span><div><h4>Team work plan</h4><p>Vehicles and work items grouped by assignment</p></div><span class="count">${groups.length}</span></div><div class="plan-team-list">${groups.map((group) => `<section class="plan-team-group"><div class="plan-team-heading">${teamMark(group.name, group.index)}<div><h5>${e(group.name)}</h5><span>${group.vehicles.length} job${group.vehicles.length === 1 ? "" : "s"}</span></div></div><div class="plan-job-list">${group.vehicles.map((v) => `<article class="plan-job"><button class="plan-job-heading" data-view="${e(v.id)}"><span><strong>${e(v.vehicle_name)}</strong><small>${[v.color, v.package_label].filter(Boolean).map(e).join(" · ") || "No package details"}</small></span>${statusBadge(v.overall_status)}${icon("chevron")}</button><div class="plan-task-list">${v.tasks.length ? [...v.tasks].sort((a, b) => a.sort_order - b.sort_order).map((task) => `<div class="plan-task ${statusClass(task.status)}"><span class="plan-task-state">${task.status === "Done" ? icon("check") : task.status === "Blocked" ? icon("alert") : icon("clock")}</span><span><strong>${e(task.task_name)}</strong>${task.notes ? `<small>${e(task.notes)}</small>` : ""}</span><em>${e(task.status)}</em></div>`).join("") : '<div class="plan-task pending"><span class="plan-task-state">' + icon("plus") + '</span><span><strong>No work items added</strong><small>Add tasks from the vehicle job.</small></span></div>'}</div>${v.notes ? `<p class="plan-job-note"><strong>Note</strong> ${e(v.notes)}</p>` : ""}</article>`).join("")}</div></section>`).join("")}</div></section><section class="plan-preview-section attention-section ${alerts.length ? "has-alerts" : "is-clear"}"><div class="plan-section-title"><span class="plan-section-icon attention">${alerts.length ? icon("alert") : icon("circleCheck")}</span><div><h4>Attention required</h4><p>${alerts.length ? "Items to resolve during the handover" : "No active warnings for this plan"}</p></div><span class="count">${alerts.length}</span></div>${alerts.length ? `<div class="plan-alert-list">${alerts.map((v) => `<button data-view="${e(v.id)}"><span><strong>${e(v.vehicle_name)}</strong><small>${warnings(v).map(e).join(" · ")}</small></span>${icon("arrow")}</button>`).join("")}</div>` : '<div class="plan-clear-banner">' + icon("circleCheck") + " Everything is clear for this plan date.</div>"}</section></div></div>`;
 }
 function historyPage() {
   const vehicles = state.data.vehicles
@@ -470,6 +511,11 @@ document.addEventListener("click", async (event) => {
     shell();
     return;
   }
+  if (d.planView) {
+    state.planView = d.planView;
+    shell();
+    return;
+  }
   if (d.editTask) {
     editTask(d.editTask);
     return;
@@ -550,6 +596,7 @@ document.addEventListener("click", async (event) => {
             state.planDate,
           );
           state.planSaved = false;
+          state.planView = "preview";
           shell();
         },
       );
@@ -683,6 +730,7 @@ document.addEventListener("change", async (event) => {
     state.planDate = el.value;
     state.planText = "";
     state.planSaved = false;
+    state.planView = "preview";
     shell();
   }
   if (el.dataset.task) {
